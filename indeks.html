@@ -3,721 +3,889 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Sekolah Modern NIDApp</title>
+    <title>RAJAWALIKU - Aplikasi Ekstrakurikuler Teater</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-cursive { font-family: 'Dancing Script', cursive; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .card-hover:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
-        .modal-backdrop { background-color: rgba(0,0,0,0.5); transition: opacity 0.3s ease-in-out; }
-        .modal-content { transition: transform 0.3s ease-in-out; }
-        
-        /* Smoother Splash Screen Styles */
-        #splash-screen {
-            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfaf6; /* Latar belakang cerah - krem */
+            color: #4f463c; /* Teks coklat tua */
         }
-        #splash-screen.fade-out {
-            opacity: 0;
-            transform: scale(0.95);
+        .font-brand {
+            font-family: 'Playfair Display', serif;
         }
-        #splash-logo {
-            animation: pulse 2.5s infinite ease-in-out;
+        /* Efek tirai panggung untuk halaman login */
+        #auth-view { 
+            background: linear-gradient(to right, #795548, #9F7A4D 25%, #9F7A4D 75%, #795548 100%); /* Gradasi Coklat Tortilla */
         }
-        #landing-page {
-            opacity: 0;
-            transition: opacity 1.2s ease-in;
-            transition-delay: 0.5s; /* Start fading in after splash starts fading out */
+        .main-bg {
+            background-color: #9F7A4D; /* Coklat Tortilla */
+            color: #fff;
         }
-        #landing-page.visible {
-            opacity: 1;
+        #main-view {
+            background-image: linear-gradient(rgba(253, 250, 246, 0.92), rgba(253, 250, 246, 0.92)), url('https://placehold.co/1920x1080/9F7A4D/FFFFFF?text=Panggung+Teater&font=playfair-display');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        .card-bg {
+            background-color: #ffffff; /* Kartu putih */
+            color: #4f463c;
+            border: 1px solid #d7ccc8;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.07);
         }
-        @keyframes fade-in-up {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
+        .accent-bg {
+            background-color: #d4af37; /* Emas untuk aksen */
+            color: #fff;
         }
-        .animate-fade-in-up { animation: fade-in-up 0.5s ease-out forwards; }
+        .accent-bg:hover {
+            background-color: #c8a435;
+        }
+        .accent-text {
+            color: #d4af37; /* Teks Emas */
+        }
+        .sidebar-item {
+            color: #e0e0e0;
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-item:hover, .sidebar-item.active {
+            background-color: #d4af37; /* Aksen emas saat aktif/hover */
+            color: #3e2723; /* Teks coklat sangat tua */
+            transform: translateX(5px);
+        }
+        .modal-backdrop {
+            background-color: rgba(0,0,0,0.7);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #d7ccc8;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #9F7A4D; /* Scrollbar coklat tortilla */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8a6a42;
+        }
+        /* Efek Spotlight pada Judul Login */
+        .login-title-container {
+            position: relative;
+            overflow: hidden;
+            padding-bottom: 1rem;
+        }
+        .login-title-container::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%) rotate(25deg);
+            width: 150px;
+            height: 300px;
+            background: linear-gradient(to bottom, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0)); /* Spotlight Emas */
+            pointer-events: none;
+        }
     </style>
 </head>
-<body class="bg-slate-50">
+<body class="overflow-x-hidden">
 
-    <!-- === SPLASH SCREEN === -->
-    <div id="splash-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-blue-200 to-pink-200">
-        <div id="splash-logo">
-             <svg class="h-32 w-32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="50" cy="50" r="48" fill="white" stroke="#DBEAFE" stroke-width="4"/>
-                  <path d="M30 75V30a5 5 0 0 1 5-5h30a5 5 0 0 1 5 5v45" fill="none" stroke="#EC4899" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
-                  <path d="M65 75a5 5 0 0 1-5 5H35a5 5 0 0 1-5-5" stroke="#EC4899" stroke-width="5" stroke-linecap="round"/>
-                  <path d="M50 25v55" stroke="#60A5FA" stroke-width="4"/>
-                  <path d="M50 45c15-5 15 5 0 0z" fill="#93C5FD"/>
-             </svg>
-        </div>
-    </div>
-
-
-    <!-- === HALAMAN DEPAN / LANDING PAGE === -->
-    <div id="landing-page">
-        <div class="relative min-h-screen bg-gradient-to-br from-blue-200 to-pink-200 text-white overflow-hidden">
-            <div class="relative min-h-screen flex flex-col lg:flex-row items-center justify-center gap-12 p-8">
-                <!-- Bagian Kiri: Informasi Sekolah -->
-                <div class="flex flex-col items-center lg:items-start text-center lg:text-left z-10 lg:w-1/2 animate-fade-in-up">
-                    <!-- Logo Sekolah SVG -->
-                    <div class="mb-6">
-                        <svg class="h-24 w-24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="48" fill="white" stroke="#DBEAFE" stroke-width="4"/>
-                            <path d="M30 75V30a5 5 0 0 1 5-5h30a5 5 0 0 1 5 5v45" fill="none" stroke="#EC4899" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M65 75a5 5 0 0 1-5 5H35a5 5 0 0 1-5-5" stroke="#EC4899" stroke-width="5" stroke-linecap="round"/>
-                            <path d="M50 25v55" stroke="#60A5FA" stroke-width="4"/>
-                            <path d="M50 45c15-5 15 5 0 0z" fill="#93C5FD"/>
-                        </svg>
-                    </div>
-
-                    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-800">Selamat Datang di</h1>
-                    <h2 class="text-4xl md:text-6xl font-extrabold text-pink-500">NIDApp</h2>
-                    <p class="mt-4 text-3xl text-slate-700 font-cursive">Religion and Knowledge Is Power</p>
-                </div>
-
-                <!-- Bagian Kanan: Form Login -->
-                <div class="z-10 w-full max-w-md animate-fade-in-up" style="animation-delay: 0.2s;">
-                    <div class="bg-white p-8 rounded-2xl shadow-2xl">
-                        <div id="role-selection-container">
-                           <div class="flex border-b border-gray-200">
-                                <button id="siswa-tab" type="button" class="flex-1 py-3 text-center font-semibold text-sm border-b-2 border-pink-500 text-pink-600 transition-colors duration-300">Siswa / Guru</button>
-                                <button id="admin-tab" type="button" class="flex-1 py-3 text-center font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-pink-600 transition-colors duration-300">Admin</button>
-                           </div>
-                        </div>
-                        
-                        <form id="auth-form" class="mt-6 space-y-6">
-                            <input type="hidden" id="login-role" value="Siswa">
-                            <div class="rounded-md shadow-sm space-y-3">
-                                <div>
-                                    <label for="username" class="sr-only">Username</label>
-                                    <input id="username" name="username" type="text" required class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="Username">
-                                </div>
-                                <div>
-                                    <label for="password" class="sr-only">Password</label>
-                                    <input id="password" name="password" type="password" required class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="Password">
-                                </div>
-                            </div>
-                            <div id="auth-error" class="text-red-500 text-sm text-center font-medium h-5"></div>
-                            <div id="auth-success" class="text-green-500 text-sm text-center font-medium h-5"></div>
-                            <div>
-                                <button id="submit-button" type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-400 to-pink-400 hover:from-blue-500 hover:to-pink-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition">
-                                    Masuk
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- === KONTEN UTAMA SETELAH LOGIN === -->
-    <div id="main-content" class="hidden">
-        <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40">
-            <div class="max-w-screen-xl mx-auto py-3 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                <h1 id="welcome-message" class="text-lg md:text-xl font-bold text-gray-900"></h1>
-                <div class="flex items-center gap-4">
-                    <div class="text-right">
-                        <p id="current-time" class="font-semibold text-gray-800"></p>
-                        <p id="current-date" class="text-sm text-gray-500"></p>
-                    </div>
-                    <button id="logout-button" class="flex items-center justify-center w-10 h-10 bg-red-500 text-white rounded-full hover:bg-red-600 transition" title="Keluar">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            </div>
-        </header>
-        <main class="bg-blue-50">
-            <div class="max-w-screen-xl mx-auto py-6 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    
-                    <!-- PINTASAN & CUACA -->
-                    <div class="lg:col-span-1 md:col-span-2 space-y-6">
-                        <div class="bg-white rounded-xl shadow-md p-5 card-hover">
-                           <h3 class="font-bold text-lg mb-3 text-gray-800">Pintasan Cepat</h3>
-                           <div class="space-y-2">
-                                <a href="#" id="elearning-link" class="flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-md"><i class="fa-solid fa-book w-6 text-blue-500"></i><span>E-Learning</span></a>
-                                <a href="#" id="library-link" class="flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-md"><i class="fa-solid fa-book-open w-6 text-pink-500"></i><span>Perpustakaan Digital</span></a>
-                                <a href="#" id="register-link" class="flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-md"><i class="fa-solid fa-user-plus w-6 text-violet-500"></i><span>Pendaftaran Baru</span></a>
-                                <a href="#" id="manage-users-link" class="flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-md admin-only hidden"><i class="fa-solid fa-users-cog w-6 text-green-500"></i><span>Kelola Pengguna</span></a>
-                           </div>
-                        </div>
-                        <!-- Weather Widget Updated -->
-                        <div class="bg-gradient-to-br from-sky-400 to-gray-400 text-white rounded-xl shadow-md p-5 card-hover">
-                            <h3 class="font-bold text-lg mb-2 text-slate-100">Cuaca Dramaga</h3>
-                            <div class="flex items-center justify-between">
-                                <div class="text-white">
-                                    <p class="text-4xl font-bold">24°C</p>
-                                    <p class="text-slate-200">Berawan</p>
-                                </div>
-                                <i class="fa-solid fa-cloud text-5xl opacity-80 text-white"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- BERITA SEKOLAH -->
-                    <div class="lg:col-span-3 md:col-span-2 bg-white rounded-xl shadow-md card-hover flex flex-col">
-                         <div class="p-5 bg-gradient-to-r from-blue-400 to-pink-400 text-white flex items-center space-x-3 rounded-t-xl">
-                              <i class="fa-solid fa-newspaper text-xl"></i>
-                              <h3 class="text-lg leading-6 font-semibold">Berita Sekolah</h3>
-                         </div>
-                        <div id="news-content" class="p-5 space-y-4 flex-grow h-96 overflow-y-auto no-scrollbar"></div>
-                        <div id="admin-news-control" class="p-3 bg-gray-50 border-t admin-only hidden rounded-b-xl">
-                            <button id="add-news-btn" class="w-full bg-pink-500 text-white py-2 rounded-md hover:bg-pink-600 transition">Tambah Berita</button>
-                        </div>
-                    </div>
-
-                    <!-- GALERI FOTO -->
-                    <div class="lg:col-span-1 md:col-span-2 bg-white rounded-xl shadow-md card-hover flex flex-col">
-                        <div class="p-5 bg-gradient-to-r from-rose-300 to-orange-300 text-white flex items-center space-x-3 rounded-t-xl">
-                            <i class="fa-solid fa-images text-xl"></i>
-                            <h3 class="text-lg leading-6 font-semibold">Galeri Sekolah</h3>
-                        </div>
-                        <div class="relative flex-grow min-h-[200px]">
-                            <img id="gallery-image" src="" class="w-full h-full object-cover" alt="Galeri Sekolah">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                            <div class="absolute bottom-2 right-2 flex gap-2">
-                                <button id="prev-image-btn" class="w-8 h-8 bg-black/50 text-white rounded-full hover:bg-black/75 transition"><i class="fa-solid fa-chevron-left"></i></button>
-                                <button id="next-image-btn" class="w-8 h-8 bg-black/50 text-white rounded-full hover:bg-black/75 transition"><i class="fa-solid fa-chevron-right"></i></button>
-                            </div>
-                        </div>
-                         <div id="admin-gallery-control" class="p-3 bg-gray-50 border-t admin-only hidden rounded-b-xl">
-                            <button id="add-photo-btn" class="w-full bg-rose-500 text-white py-2 rounded-md hover:bg-rose-600 transition">Tambah Foto</button>
-                        </div>
-                    </div>
-
-                    <!-- AGENDA KEGIATAN -->
-                    <div class="lg:col-span-1 md:col-span-1 bg-white rounded-xl shadow-md card-hover flex flex-col">
-                         <div class="p-5 bg-gradient-to-r from-sky-300 to-cyan-400 text-white flex items-center space-x-3 rounded-t-xl">
-                              <i class="fa-solid fa-calendar-check text-xl"></i>
-                              <h3 class="text-lg leading-6 font-semibold">Agenda Kegiatan</h3>
-                         </div>
-                        <div id="agenda-content" class="p-5 space-y-4 flex-grow h-96 overflow-y-auto no-scrollbar"></div>
-                        <div id="admin-agenda-control" class="p-3 bg-gray-50 border-t admin-only hidden rounded-b-xl">
-                           <button id="add-agenda-btn" class="w-full bg-cyan-500 text-white py-2 rounded-md hover:bg-cyan-600 transition">Tambah Agenda</button>
-                        </div>
-                    </div>
-
-                    <!-- PENGUMUMAN RESMI -->
-                    <div class="lg:col-span-2 md:col-span-2 bg-white rounded-xl shadow-md card-hover flex flex-col">
-                        <div class="p-5 bg-gradient-to-r from-violet-400 to-purple-400 text-white flex items-center space-x-3 rounded-t-xl">
-                            <i class="fa-solid fa-bullhorn text-xl"></i>
-                            <h3 class="text-lg leading-6 font-semibold">Pengumuman Resmi</h3>
-                        </div>
-                        <div id="announcement-content" class="p-5 space-y-4 flex-grow h-96 overflow-y-auto no-scrollbar"></div>
-                        <div id="admin-announcement-control" class="p-3 bg-gray-50 border-t admin-only hidden rounded-b-xl">
-                           <button id="add-announcement-btn" class="w-full bg-purple-500 text-white py-2 rounded-md hover:bg-purple-600 transition">Tambah Pengumuman</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- MODAL -->
-    <div id="modal-container" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
-      <div id="modal-content" class="bg-white rounded-lg shadow-2xl w-full max-w-2xl transform -translate-y-10 opacity-0"></div>
-    </div>
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // === SPLASH SCREEN LOGIC ===
-            const splashScreen = document.getElementById('splash-screen');
-            const landingPage = document.getElementById('landing-page');
-            
-            const showLandingPage = () => {
-                if (splashScreen) {
-                    splashScreen.classList.add('fade-out');
-                }
-                if (landingPage) {
-                    landingPage.classList.add('visible');
-                }
-                setTimeout(() => {
-                    if (splashScreen) {
-                        splashScreen.style.display = 'none';
-                    }
-                }, 1000); 
-            };
-
-
-            // === DATA INITIALIZATION ===
-            const initialData = {
-                news: [
-                    { title: 'Juara 1 Lomba Cerdas Cermat Nasional', content: 'Tim cerdas cermat sekolah kita berhasil meraih Juara 1 dalam kompetisi nasional. Selamat kepada tim!', date: '6 Oktober 2025' },
-                    { title: 'Program Penghijauan Sekolah Dimulai', content: 'Gerakan menanam 1000 pohon di lingkungan sekolah telah resmi dimulai.', date: '3 Oktober 2025' },
-                ],
-                agenda: [
-                    { date: '2025-10-10', title: 'Ujian Tengah Semester (UTS) Dimulai', details: 'Berlangsung s/d 15 Oktober.' },
-                    { date: '2025-10-17', title: 'Class Meeting Antar Kelas', details: 'Pendaftaran dibuka hingga 15 Oktober.' },
-                ],
-                announcements: [
-                    { title: 'Libur Sekolah: Maulid Nabi Muhammad SAW', content: 'Kegiatan belajar mengajar diliburkan pada 12 Oktober 2025.', date: '4 Oktober 2025' },
-                    { title: 'Pembaruan Jadwal Pelajaran', content: 'Jadwal baru untuk kelas XI & XII berlaku mulai Senin, 6 Oktober 2025.', date: '2 Oktober 2025' },
-                ],
-                gallery: [
-                    'https://placehold.co/600x400/93C5FD/ffffff?text=Upacara+Bendera',
-                    'https://placehold.co/600x400/F472B6/ffffff?text=Lomba+17+Agustus',
-                    'https://placehold.co/600x400/FB923C/ffffff?text=Kegiatan+Pramuka',
-                    'https://placehold.co/600x400/A78BFA/ffffff?text=Wisuda+Angkatan+2025',
-                ],
-                users: [
-                    { id: 1, name: 'Budi Darmawan', username: 'budi', role: 'Siswa', password: 'password123' },
-                    { id: 2, name: 'Ani Lestari', username: 'ani', role: 'Siswa', password: 'password123' },
-                    { id: 3, name: 'Ibu Budiarti', username: 'guru', role: 'Guru', password: 'guru123' },
-                    { id: 4, name: 'Bapak Admin', username: 'admin', role: 'Admin', password: 'admin123' }
-                ]
-            };
-            
-            let currentGalleryIndex = 0;
-            let timeInterval;
-            // Updated simulated date based on user context
-            let simulatedDate = new Date('2025-10-08T07:12:00.000+07:00');
-
-            // === DOM ELEMENTS ===
-            const mainContent = document.getElementById('main-content');
-            const authForm = document.getElementById('auth-form');
-            const authError = document.getElementById('auth-error');
-            const authSuccess = document.getElementById('auth-success');
-            const welcomeMessage = document.getElementById('welcome-message');
-            const logoutButton = document.getElementById('logout-button');
-            const adminOnlyElements = document.querySelectorAll('.admin-only');
-            const modalContainer = document.getElementById('modal-container');
-            const modalContent = document.getElementById('modal-content');
-            const newsContent = document.getElementById('news-content');
-            const agendaContent = document.getElementById('agenda-content');
-            const announcementContent = document.getElementById('announcement-content');
-            const galleryImage = document.getElementById('gallery-image');
-            const prevImageBtn = document.getElementById('prev-image-btn');
-            const nextImageBtn = document.getElementById('next-image-btn');
-            const currentTimeEl = document.getElementById('current-time');
-            const currentDateEl = document.getElementById('current-date');
-            
-            const siswaTab = document.getElementById('siswa-tab');
-            const adminTab = document.getElementById('admin-tab');
-            const loginRole = document.getElementById('login-role');
-
-            const elearningLink = document.getElementById('elearning-link');
-            const libraryLink = document.getElementById('library-link');
-            const registerLink = document.getElementById('register-link');
-            const manageUsersLink = document.getElementById('manage-users-link');
-            
-            // Admin control buttons
-            const addNewsBtn = document.getElementById('add-news-btn');
-            const addPhotoBtn = document.getElementById('add-photo-btn');
-            const addAgendaBtn = document.getElementById('add-agenda-btn');
-            const addAnnouncementBtn = document.getElementById('add-announcement-btn');
-
-
-            // === RENDER FUNCTIONS ===
-            const renderNews = () => { newsContent.innerHTML = initialData.news.map(item => `<div class="border-l-4 border-pink-400 pl-4"><h4 class="font-bold text-gray-800">${item.title}</h4><p class="text-sm text-gray-600 mt-1">${item.content}</p><p class="text-xs text-gray-400 mt-2">${item.date}</p></div>`).join(''); };
-            const renderAgenda = () => { const months = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES']; agendaContent.innerHTML = initialData.agenda.sort((a,b) => new Date(a.date) - new Date(b.date)).map(item => { const d = new Date(item.date); d.setMinutes(d.getMinutes() + d.getTimezoneOffset()); const day = String(d.getDate()).padStart(2, '0'); const month = months[d.getMonth()]; return `<div class="flex items-start space-x-4"><div class="flex-shrink-0 text-center bg-cyan-100 text-cyan-800 p-2 rounded-lg w-14"><p class="font-bold text-lg">${day}</p><p class="text-xs">${month}</p></div><div><h4 class="font-bold text-gray-800">${item.title}</h4><p class="text-sm text-gray-600">${item.details}</p></div></div>`; }).join(''); };
-            const renderAnnouncements = () => { announcementContent.innerHTML = initialData.announcements.map(item => `<div class="p-3 bg-gray-100 border-l-4 border-purple-400 text-gray-800 rounded-r-lg"><h4 class="font-bold">${item.title}</h4><p class="text-sm mt-1">${item.content}</p></div>`).join(''); };
-            
-            // === UTILITY FUNCTIONS ===
-            const getGreeting = () => {
-                const hour = simulatedDate.getHours();
-                if (hour < 11) return 'Pagi'; if (hour < 15) return 'Siang'; if (hour < 18) return 'Sore'; return 'Malam';
-            };
-            const updateTime = () => { 
-                simulatedDate.setSeconds(simulatedDate.getSeconds() + 1);
-                const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Jakarta' }; 
-                currentTimeEl.textContent = simulatedDate.toLocaleTimeString('id-ID', timeOptions) + ' WIB'; 
-                const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; 
-                currentDateEl.textContent = simulatedDate.toLocaleDateString('id-ID', dateOptions); 
-            };
-            const updateGallery = () => { 
-                if (!galleryImage) return;
-                galleryImage.style.opacity = 0; 
-                setTimeout(() => { 
-                    galleryImage.src = initialData.gallery[currentGalleryIndex] || 'https://placehold.co/600x400/cccccc/ffffff?text=Galeri+Kosong';
-                    galleryImage.onerror = () => {
-                        galleryImage.src = 'https://placehold.co/600x400/fecaca/991b1b?text=Gagal+Memuat';
-                    };
-                    galleryImage.style.opacity = 1; 
-                }, 300); 
-            };
-            
-            // === MODAL FUNCTIONS ===
-            const openModal = (title, contentHTML, onInit) => { 
-                modalContent.innerHTML = `<div class="p-5 border-b flex justify-between items-center bg-gray-50 rounded-t-lg"><h3 class="text-xl font-semibold text-gray-800">${title}</h3><button id="close-modal-btn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button></div><div class="p-5">${contentHTML}</div>`; 
-                modalContainer.classList.remove('hidden'); 
-                setTimeout(() => { modalContent.classList.remove('-translate-y-10', 'opacity-0'); modalContent.classList.add('translate-y-0', 'opacity-100'); }, 10); 
-                document.getElementById('close-modal-btn').addEventListener('click', closeModal); 
-                if (onInit) { onInit(modalContent); }
-            };
-
-            const openSubmitModal = (title, contentHTML, onSubmit) => {
-                 openModal(title, contentHTML, (modal) => {
-                     const form = modal.querySelector('form');
-                     if (form && onSubmit) {
-                         form.addEventListener('submit', (e) => {
-                             e.preventDefault();
-                             onSubmit(new FormData(form));
-                             closeModal();
-                         });
-                     }
-                 });
-            };
-
-            const closeModal = () => { 
-                modalContent.classList.add('-translate-y-10', 'opacity-0'); 
-                modalContent.classList.remove('translate-y-0', 'opacity-100'); 
-                setTimeout(() => { modalContainer.classList.add('hidden'); modalContent.innerHTML = ''; }, 300); 
-            };
-
-            // === AUTH & DASHBOARD FUNCTIONS ===
-            const initDashboard = () => {
-                const user = JSON.parse(sessionStorage.getItem('loggedInUser'));
-                if (!user) { logout(); return; }
-                document.getElementById('landing-page').style.display = 'none';
-                mainContent.classList.remove('hidden');
-                welcomeMessage.textContent = `Selamat ${getGreeting()}, ${user.name}!`;
-                if (user.role === 'Admin') { adminOnlyElements.forEach(el => el.classList.remove('hidden')); } else { adminOnlyElements.forEach(el => el.classList.add('hidden')); }
-                renderNews(); renderAgenda(); renderAnnouncements(); updateGallery(); updateTime();
-                timeInterval = setInterval(updateTime, 1000);
-            };
-
-            const logout = () => {
-                sessionStorage.removeItem('loggedInUser');
-                clearInterval(timeInterval);
-                mainContent.classList.add('hidden');
-                document.getElementById('landing-page').style.display = ''; 
-                landingPage.classList.add('visible');
-                authForm.reset(); authError.textContent = ''; authSuccess.textContent = '';
-            };
-            
-            // === USER MANAGEMENT FUNCTIONS (NEW) ===
-            const renderUserList = () => {
-                const userListContainer = document.getElementById('user-list-container');
-                if (!userListContainer) return;
-
-                userListContainer.innerHTML = initialData.users.map(user => `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-3">${user.name}</td>
-                        <td class="p-3">${user.username}</td>
-                        <td class="p-3"><span class="px-2 py-1 text-xs rounded-full ${user.role === 'Guru' ? 'bg-blue-100 text-blue-800' : (user.role === 'Admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800')}">${user.role}</span></td>
-                        <td class="p-3 text-right">
-                            <button class="edit-user-btn text-blue-500 hover:text-blue-700 mr-3" data-id="${user.id}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="delete-user-btn text-red-500 hover:text-red-700" data-id="${user.id}" title="Hapus"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `).join('');
-
-                document.querySelectorAll('.edit-user-btn').forEach(btn => btn.addEventListener('click', handleEditUser));
-                document.querySelectorAll('.delete-user-btn').forEach(btn => btn.addEventListener('click', handleDeleteUser));
-            };
-            
-            const handleAddUser = () => {
-                const formHTML = `
-                    <form id="user-form" class="space-y-4">
-                        <input type="text" name="name" required class="w-full p-2 border rounded" placeholder="Nama Lengkap">
-                        <input type="text" name="username" required class="w-full p-2 border rounded" placeholder="Username">
-                        <input type="password" name="password" required class="w-full p-2 border rounded" placeholder="Password">
-                        <select name="role" required class="w-full p-2 border rounded bg-white">
-                            <option value="Siswa">Siswa</option>
-                            <option value="Guru">Guru</option>
-                        </select>
-                        <div class="text-right">
-                            <button type="submit" class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Simpan</button>
-                        </div>
-                    </form>
-                `;
-                openSubmitModal('Tambah Pengguna Baru', formHTML, (formData) => {
-                    const name = formData.get('name');
-                    const username = formData.get('username');
-                    const password = formData.get('password');
-                    const role = formData.get('role');
-                    if (name && username && role && password) {
-                        const newId = Math.max(...initialData.users.map(u => u.id), 0) + 1;
-                        initialData.users.push({ id: newId, name, username, role, password });
-                        renderUserList();
-                    }
-                });
-            };
-
-            const handleEditUser = (e) => {
-                const userId = parseInt(e.currentTarget.dataset.id);
-                const user = initialData.users.find(u => u.id === userId);
-                if (!user) return;
-
-                const formHTML = `
-                    <form id="user-form" class="space-y-4">
-                        <input type="hidden" name="id" value="${user.id}">
-                        <input type="text" name="name" required class="w-full p-2 border rounded" placeholder="Nama Lengkap" value="${user.name}">
-                        <input type="text" name="username" required class="w-full p-2 border rounded" placeholder="Username" value="${user.username}">
-                        <input type="password" name="password" class="w-full p-2 border rounded" placeholder="Password Baru (kosongkan jika tidak berubah)">
-                        <select name="role" required class="w-full p-2 border rounded bg-white">
-                            <option value="Siswa" ${user.role === 'Siswa' ? 'selected' : ''}>Siswa</option>
-                            <option value="Guru" ${user.role === 'Guru' ? 'selected' : ''}>Guru</option>
-                            <option value="Admin" ${user.role === 'Admin' ? 'selected' : ''}>Admin</option>
-                        </select>
-                        <div class="text-right">
-                            <button type="submit" class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Update</button>
-                        </div>
-                    </form>
-                `;
-                openSubmitModal(`Edit Pengguna: ${user.name}`, formHTML, (formData) => {
-                    const id = parseInt(formData.get('id'));
-                    const name = formData.get('name');
-                    const username = formData.get('username');
-                    const newPassword = formData.get('password');
-                    const role = formData.get('role');
-                    const userIndex = initialData.users.findIndex(u => u.id === id);
-                    if (userIndex > -1) {
-                        initialData.users[userIndex].name = name;
-                        initialData.users[userIndex].username = username;
-                        initialData.users[userIndex].role = role;
-                        if (newPassword) {
-                           initialData.users[userIndex].password = newPassword;
-                        }
-                        renderUserList();
-                    }
-                });
-            };
-
-            const handleDeleteUser = (e) => {
-                const userId = parseInt(e.currentTarget.dataset.id);
-                const user = initialData.users.find(u => u.id === userId);
-                if (user && user.role === 'Admin') {
-                    // Simple alert for now, in a real app use a custom modal
-                    console.log("Cannot delete admin user.");
-                    return;
-                }
-                initialData.users = initialData.users.filter(u => u.id !== userId);
-                renderUserList();
-            };
-
-            const openUserManagementModal = () => {
-                const content = `
-                    <div class="flex justify-end mb-4">
-                        <button id="add-user-btn" class="py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 flex items-center gap-2 transition"><i class="fa-solid fa-plus"></i>Tambah Pengguna</button>
-                    </div>
-                    <div class="h-[60vh] overflow-y-auto border rounded-lg">
-                        <table class="w-full text-sm text-left">
-                            <thead class="bg-gray-100 sticky top-0">
-                                <tr>
-                                    <th class="p-3 font-semibold">Nama</th>
-                                    <th class="p-3 font-semibold">Username</th>
-                                    <th class="p-3 font-semibold">Peran</th>
-                                    <th class="p-3 font-semibold"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="user-list-container" class="bg-white">
-                                <!-- User list will be rendered here -->
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                openModal('Kelola Pengguna', content, () => {
-                    renderUserList();
-                    document.getElementById('add-user-btn').addEventListener('click', handleAddUser);
-                });
-            };
-
-            // === EVENT LISTENERS ===
-            siswaTab.addEventListener('click', () => {
-                adminTab.classList.remove('border-pink-500', 'text-pink-600'); adminTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-pink-600');
-                siswaTab.classList.add('border-pink-500', 'text-pink-600'); siswaTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-pink-600');
-                loginRole.value = 'Siswa';
-            });
+    <!-- Container Utama Aplikasi -->
+    <div id="app" class="flex h-screen">
         
-            adminTab.addEventListener('click', () => {
-                siswaTab.classList.remove('border-pink-500', 'text-pink-600'); siswaTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-pink-600');
-                adminTab.classList.add('border-pink-500', 'text-pink-600'); adminTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-pink-600');
-                loginRole.value = 'Admin';
-            });
+        <!-- === BAGIAN LOGIN & DAFTAR === -->
+        <div id="auth-view" class="w-full h-full flex items-center justify-center p-4">
+            <div class="w-full max-w-md">
+                <div class="text-center mb-8 login-title-container">
+                    <i class="fas fa-theater-masks text-5xl text-yellow-300"></i>
+                    <h1 class="font-brand text-4xl mt-2 text-white">RAJAWALIKU</h1>
+                    <p class="text-gray-300">Ekstrakurikuler Teater</p>
+                </div>
 
-            authForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const username = authForm.username.value.trim().toLowerCase();
-                const password = authForm.password.value;
-                const selectedRole = loginRole.value;
-                authError.textContent = ''; 
-                authSuccess.textContent = '';
-
-                if (!username || !password) {
-                    authError.textContent = 'Username dan password tidak boleh kosong.';
-                    setTimeout(() => authError.textContent = '', 3000);
-                    return;
-                }
-
-                const user = initialData.users.find(u => u.username.toLowerCase() === username && u.password === password);
-
-                if (user && ((selectedRole === 'Admin' && user.role === 'Admin') || (selectedRole !== 'Admin' && (user.role === 'Siswa' || user.role === 'Guru')))) {
-                    sessionStorage.setItem('loggedInUser', JSON.stringify(user));
-                    initDashboard();
-                } else {
-                    authError.textContent = 'Username atau password salah.';
-                    setTimeout(() => authError.textContent = '', 3000);
-                }
-            });
-
-            logoutButton.addEventListener('click', logout);
-            nextImageBtn.addEventListener('click', () => { currentGalleryIndex = (currentGalleryIndex + 1) % initialData.gallery.length; updateGallery(); });
-            prevImageBtn.addEventListener('click', () => { currentGalleryIndex = (currentGalleryIndex - 1 + initialData.gallery.length) % initialData.gallery.length; updateGallery(); });
-
-            // === MODAL EVENT LISTENERS ===
-            elearningLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                const content = `
-                    <div class="flex flex-col md:flex-row h-[60vh] overflow-hidden">
-                        <div class="w-full md:w-1/4 bg-gray-100 p-4 border-r overflow-y-auto">
-                            <h4 class="font-bold mb-4">Mata Pelajaran</h4>
-                            <ul class="space-y-2" id="subject-list">
-                                <li><a href="#" class="block p-2 rounded hover:bg-blue-200 subject-item" data-subject="matematika">Matematika</a></li>
-                                <li><a href="#" class="block p-2 rounded hover:bg-blue-200 subject-item" data-subject="ipa">Ilmu Pengetahuan Alam</a></li>
-                                <li><a href="#" class="block p-2 rounded hover:bg-blue-200 subject-item" data-subject="sejarah">Sejarah Indonesia</a></li>
-                            </ul>
+                <!-- FORM LOGIN -->
+                <div id="login-form" class="bg-black bg-opacity-25 p-8 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-6 text-center text-white">Login Anggota</h2>
+                    <form id="loginForm">
+                        <div class="mb-4">
+                            <label for="login-username" class="block text-gray-300 mb-2">Username</label>
+                            <input type="text" id="login-username" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white" required>
                         </div>
-                        <div id="material-content" class="w-full md:w-3/4 p-6 overflow-y-auto">
-                           <p class="text-gray-500">Pilih mata pelajaran untuk melihat materi.</p>
+                        <div class="mb-6">
+                            <label for="login-password" class="block text-gray-300 mb-2">Password</label>
+                            <input type="password" id="login-password" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white" required>
                         </div>
-                    </div>`;
-                const materials = {
-                    matematika: '<ul><li><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>Modul 1: Aljabar Linear</li><li><i class="fa-solid fa-file-powerpoint text-orange-500 mr-2"></i>Presentasi 1: Konsep Dasar</li><li><i class="fa-solid fa-video text-blue-500 mr-2"></i>Video Pembelajaran: Persamaan Kuadrat</li></ul>',
-                    ipa: '<ul><li><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>Modul 1: Sistem Tata Surya</li><li><i class="fa-solid fa-video text-blue-500 mr-2"></i>Video Eksperimen: Fotosintesis</li></ul>',
-                    sejarah: '<ul><li><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>Modul 1: Kerajaan Majapahit</li><li><i class="fa-solid fa-file-powerpoint text-orange-500 mr-2"></i>Presentasi 1: Perang Kemerdekaan</li></ul>'
-                };
-                openModal('Portal E-Learning', content, (modal) => {
-                    modal.querySelectorAll('.subject-item').forEach(item => {
-                        item.addEventListener('click', function(ev) {
-                            ev.preventDefault();
-                            document.getElementById('material-content').innerHTML = `
-                                <h3 class="text-xl font-bold mb-4">Materi ${this.textContent}</h3>
-                                <div class="space-y-3">${materials[this.dataset.subject]}</div>`;
-                        });
-                    });
-                });
-            });
+                        <button type="submit" class="w-full accent-bg text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-400 transition duration-300">Login</button>
+                    </form>
+                    <p class="text-center text-gray-300 mt-4 text-sm">
+                        Belum punya akun? <a href="#" id="show-register-link" class="text-yellow-400 hover:underline">Daftar di sini</a>
+                    </p>
+                </div>
 
-            libraryLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                const books = [
-                    { title: "Laskar Pelangi", author: "Andrea Hirata", img: "https://placehold.co/150x200/F472B6/FFFFFF?text=Laskar+Pelangi" },
-                    { title: "Bumi Manusia", author: "Pramoedya A. Toer", img: "https://placehold.co/150x200/FB923C/FFFFFF?text=Bumi+Manusia" },
-                    { title: "Negeri 5 Menara", author: "Ahmad Fuadi", img: "https://placehold.co/150x200/93C5FD/FFFFFF?text=Negeri+5+Menara" },
-                    { title: "Cantik Itu Luka", author: "Eka Kurniawan", img: "https://placehold.co/150x200/A78BFA/FFFFFF?text=Cantik+Itu+Luka" }
-                ];
-                const renderBooks = (bookList) => bookList.map(book => `<div class="text-center book-item"><img src="${book.img}" alt="${book.title}" class="rounded shadow-md w-full h-auto object-cover aspect-[3/4] mb-2"><h5 class="font-bold text-sm">${book.title}</h5><p class="text-xs text-gray-500">${book.author}</p></div>`).join('');
-                
-                const content = `
-                    <div class="px-2">
-                         <input type="text" id="book-search" placeholder="Cari judul buku..." class="w-full p-2 border rounded mb-4">
-                         <div id="book-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 h-[50vh] overflow-y-auto p-2">
-                             ${renderBooks(books)}
-                         </div>
-                    </div>`;
-
-                openModal('Perpustakaan Digital', content, (modal) => {
-                    const searchInput = modal.querySelector('#book-search');
-                    const bookGrid = modal.querySelector('#book-grid');
-                    searchInput.addEventListener('keyup', () => {
-                        const searchTerm = searchInput.value.toLowerCase();
-                        const filteredBooks = books.filter(book => book.title.toLowerCase().includes(searchTerm));
-                        if(filteredBooks.length > 0) {
-                            bookGrid.innerHTML = renderBooks(filteredBooks);
-                        } else {
-                            bookGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">Buku tidak ditemukan.</p>';
-                        }
-                    });
-                });
-            });
-
-            registerLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                const formHTML = `
-                    <form class="space-y-4">
-                        <p class="text-sm text-gray-600">Fitur pendaftaran siswa baru akan segera tersedia. Silakan hubungi administrasi sekolah untuk informasi lebih lanjut.</p>
-                        <div class="p-4 bg-blue-100 rounded-lg">
-                            <h4 class="font-bold text-blue-800">Kontak Administrasi</h4>
-                            <p class="text-blue-700">Telepon: (0251) 123-456</p>
-                            <p class="text-blue-700">Email: pendaftaran@nidapp.sch.id</p>
+                <!-- FORM DAFTAR ANGGOTA BARU -->
+                <div id="register-form" class="bg-black bg-opacity-25 p-8 rounded-lg shadow-lg hidden">
+                    <h2 class="text-2xl font-bold mb-6 text-center text-white">Daftar Anggota Baru</h2>
+                    <form id="registerForm">
+                        <div class="mb-4">
+                            <label class="block text-gray-300 mb-2">Nama Lengkap</label>
+                            <input type="text" id="register-name" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white" required>
                         </div>
-                    </form>`;
-                openModal('Pendaftaran Siswa Baru', formHTML);
-            });
-            
-            manageUsersLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                openUserManagementModal();
-            });
+                         <div class="mb-4">
+                            <label class="block text-gray-300 mb-2">Username</label>
+                            <input type="text" id="register-username" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-300 mb-2">Password</label>
+                            <input type="password" id="register-password" class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white" required>
+                        </div>
+                        <button type="submit" class="w-full accent-bg text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-400 transition duration-300">Daftar</button>
+                    </form>
+                    <p class="text-center text-gray-300 mt-4 text-sm">
+                        Sudah punya akun? <a href="#" id="show-login-link" class="text-yellow-400 hover:underline">Login di sini</a>
+                    </p>
+                </div>
+            </div>
+        </div>
 
-            // === ADMIN CONTROL LISTENERS ===
-            addNewsBtn.addEventListener('click', () => {
-                const formHTML = `<form class="space-y-4"><input type="text" name="title" required class="w-full p-2 border rounded" placeholder="Judul Berita"><textarea name="content" required class="w-full p-2 border rounded" rows="4" placeholder="Isi berita..."></textarea><div class="text-right"><button type="submit" class="py-2 px-4 bg-pink-500 text-white rounded hover:bg-pink-600">Publikasikan</button></div></form>`;
-                openSubmitModal('Tambah Berita Baru', formHTML, (formData) => {
-                    const title = formData.get('title');
-                    const content = formData.get('content');
-                    if (title && content) {
-                        const date = new Date(simulatedDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-                        initialData.news.unshift({ title, content, date });
-                        renderNews();
-                    }
-                });
-            });
-            
-            addPhotoBtn.addEventListener('click', () => {
-                const formHTML = `<form class="space-y-4"><input type="url" name="url" required class="w-full p-2 border rounded" placeholder="https://example.com/image.jpg"><div class="text-right"><button type="submit" class="py-2 px-4 bg-rose-500 text-white rounded hover:bg-rose-600">Tambah Foto</button></div></form>`;
-                openSubmitModal('Tambah Foto Galeri', formHTML, (formData) => {
-                    const url = formData.get('url');
-                    if (url) {
-                        initialData.gallery.push(url);
-                        currentGalleryIndex = initialData.gallery.length - 1;
-                        updateGallery();
-                    }
-                });
-            });
+        <!-- === BAGIAN UTAMA APLIKASI SETELAH LOGIN === -->
+        <div id="main-view" class="hidden w-full h-full">
+            <!-- Sidebar (Desktop) -->
+            <aside class="w-64 main-bg shadow-lg hidden md:block">
+                <div class="p-6 text-center border-b border-yellow-900">
+                     <i class="fas fa-theater-masks text-4xl accent-text"></i>
+                    <h1 class="font-brand text-2xl mt-2 text-white">RAJAWALIKU</h1>
+                </div>
+                <nav id="desktop-nav" class="p-4"></nav>
+            </aside>
 
-            addAgendaBtn.addEventListener('click', () => {
-                const formHTML = `<form class="space-y-4"><input type="date" name="date" required class="w-full p-2 border rounded"><input type="text" name="title" required class="w-full p-2 border rounded" placeholder="Nama Agenda"><input type="text" name="details" required class="w-full p-2 border rounded" placeholder="Detail singkat..."><div class="text-right"><button type="submit" class="py-2 px-4 bg-cyan-500 text-white rounded hover:bg-cyan-600">Simpan Agenda</button></div></form>`;
-                openSubmitModal('Tambah Agenda Baru', formHTML, (formData) => {
-                    const date = formData.get('date');
-                    const title = formData.get('title');
-                    const details = formData.get('details');
-                    if (date && title && details) {
-                        initialData.agenda.push({ date, title, details });
-                        renderAgenda();
-                    }
-                });
-            });
+            <!-- Konten Utama -->
+            <main class="flex-1 flex flex-col h-screen">
+                <!-- Header -->
+                <header class="main-bg shadow-md p-4 flex justify-between items-center text-white">
+                    <button id="menu-toggle" class="md:hidden text-2xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 id="page-title" class="text-xl font-bold"></h2>
+                    <div class="flex items-center">
+                        <span id="user-greeting" class="mr-4"></span>
+                        <button id="logout-btn" class="accent-bg text-white px-3 py-1 rounded-md text-sm font-semibold hover:bg-yellow-400">
+                            <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                        </button>
+                    </div>
+                </header>
 
-            addAnnouncementBtn.addEventListener('click', () => {
-                 const formHTML = `<form class="space-y-4"><input type="text" name="title" required class="w-full p-2 border rounded" placeholder="Judul Pengumuman"><textarea name="content" required class="w-full p-2 border rounded" rows="4" placeholder="Isi pengumuman..."></textarea><div class="text-right"><button type="submit" class="py-2 px-4 bg-purple-500 text-white rounded hover:bg-purple-600">Publikasikan</button></div></form>`;
-                openSubmitModal('Tambah Pengumuman Baru', formHTML, (formData) => {
-                    const title = formData.get('title');
-                    const content = formData.get('content');
-                    if (title && content) {
-                         const date = new Date(simulatedDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-                        initialData.announcements.unshift({ title, content, date });
-                        renderAnnouncements();
-                    }
-                });
-            });
+                <!-- Area Konten Halaman -->
+                <div id="content-area" class="flex-1 p-6 overflow-y-auto">
+                    <!-- Konten dinamis akan dimuat di sini -->
+                </div>
+            </main>
+        </div>
+        
+        <!-- Sidebar (Mobile) -->
+        <div id="mobile-sidebar" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden">
+            <aside class="w-64 main-bg shadow-lg h-full">
+                <div class="p-6 text-center border-b border-yellow-900 flex justify-between items-center">
+                    <div>
+                        <i class="fas fa-theater-masks text-4xl accent-text"></i>
+                        <h1 class="font-brand text-2xl mt-2 text-white">RAJAWALIKU</h1>
+                    </div>
+                    <button id="close-menu" class="text-2xl text-white"><i class="fas fa-times"></i></button>
+                </div>
+                <nav id="mobile-nav" class="p-4"></nav>
+            </aside>
+        </div>
+    </div>
 
-            // === INITIALIZATION ===
-            if (sessionStorage.getItem('loggedInUser')) {
-                showLandingPage();
-                setTimeout(initDashboard, 1200);
-            } else {
-                showLandingPage();
+    <!-- MODAL CONTAINER -->
+    <div id="modal-container" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+        <!-- Konten modal akan dimuat di sini -->
+    </div>
+
+    <!-- Template untuk Konten Halaman -->
+    <template id="dashboard-template">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="card-bg p-6 rounded-lg">
+                <h3 class="text-lg font-bold mb-2 accent-text">Kegiatan Terdekat</h3>
+                <div id="upcoming-activity">Memuat...</div>
+            </div>
+            <div class="card-bg p-6 rounded-lg">
+                <h3 class="text-lg font-bold mb-2 accent-text">Pengumuman Terbaru</h3>
+                <div id="latest-announcement">Memuat...</div>
+            </div>
+            <div class="card-bg p-6 rounded-lg">
+                <h3 class="text-lg font-bold mb-2 accent-text">Total Anggota</h3>
+                <p id="total-members" class="text-3xl font-bold">0</p>
+            </div>
+        </div>
+    </template>
+
+    <template id="members-template">
+        <div class="card-bg p-6 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Data Anggota</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="border-b">
+                        <tr>
+                            <th class="p-3">Nama</th>
+                            <th class="p-3">Username</th>
+                            <th class="p-3">Role</th>
+                            <th class="p-3">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="members-list">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+    
+    <template id="activities-template">
+       <div class="card-bg p-6 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Jadwal Kegiatan Bulan Ini</h2>
+                <button id="add-activity-btn" class="admin-only accent-bg text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-400 text-sm">
+                    <i class="fas fa-plus mr-2"></i>Tambah Kegiatan
+                </button>
+            </div>
+            <div id="activities-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            </div>
+        </div>
+    </template>
+    
+    <template id="attendance-template">
+        <div class="card-bg p-6 rounded-lg">
+            <h2 class="text-xl font-bold mb-4">Absensi Anggota</h2>
+            <div id="attendance-list">
+            </div>
+        </div>
+    </template>
+    
+    <template id="announcements-template">
+        <div class="card-bg p-6 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Pengumuman</h2>
+                <button id="add-announcement-btn" class="admin-only accent-bg text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-400 text-sm">
+                    <i class="fas fa-plus mr-2"></i>Buat Pengumuman
+                </button>
+            </div>
+            <div id="announcements-list" class="space-y-4">
+            </div>
+        </div>
+    </template>
+
+    <template id="scripts-template">
+        <div class="card-bg p-6 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Jendela Naskah</h2>
+                <button id="add-script-btn" class="admin-only accent-bg text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-400 text-sm">
+                    <i class="fas fa-plus mr-2"></i>Tambah Naskah
+                </button>
+            </div>
+            <div id="scripts-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            </div>
+        </div>
+    </template>
+
+    <template id="gallery-template">
+        <div class="card-bg p-6 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Galeri Dokumentasi</h2>
+                <button id="add-gallery-btn" class="admin-only accent-bg text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-400 text-sm">
+                    <i class="fas fa-plus mr-2"></i>Tambah Foto
+                </button>
+            </div>
+            <div id="gallery-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            </div>
+        </div>
+    </template>
+
+    <template id="forum-template">
+        <div class="card-bg p-6 rounded-lg flex flex-col h-[calc(100vh-10rem)]">
+            <h2 class="text-xl font-bold mb-4 border-b pb-2">Forum Diskusi</h2>
+            <div id="forum-messages" class="flex-1 overflow-y-auto space-y-4 pr-2 mb-4">
+            </div>
+            <form id="forum-form" class="flex gap-2">
+                <input type="text" id="forum-input" placeholder="Ketik pesan Anda..." class="flex-1 px-4 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                <button type="submit" class="accent-bg text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-400"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </template>
+    
+    <!-- TEMPLATE BARU: BACKSTAGE -->
+    <template id="backstage-template">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Kolom Kostum -->
+            <div class="card-bg p-6 rounded-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold"><i class="fas fa-vest-patches mr-2 accent-text"></i>Kostum</h3>
+                    <button id="add-costume-btn" class="admin-only accent-bg text-white font-bold py-1 px-3 rounded-md text-sm"><i class="fas fa-plus"></i></button>
+                </div>
+                <ul id="costumes-list" class="space-y-2"></ul>
+            </div>
+            <!-- Kolom Properti -->
+            <div class="card-bg p-6 rounded-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold"><i class="fas fa-hat-wizard mr-2 accent-text"></i>Properti</h3>
+                    <button id="add-prop-btn" class="admin-only accent-bg text-white font-bold py-1 px-3 rounded-md text-sm"><i class="fas fa-plus"></i></button>
+                </div>
+                <ul id="props-list" class="space-y-2"></ul>
+            </div>
+            <!-- Kolom Jadwal Gladi -->
+            <div class="card-bg p-6 rounded-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold"><i class="fas fa-calendar-check mr-2 accent-text"></i>Jadwal Gladi</h3>
+                    <button id="add-rehearsal-btn" class="admin-only accent-bg text-white font-bold py-1 px-3 rounded-md text-sm"><i class="fas fa-plus"></i></button>
+                </div>
+                <ul id="rehearsals-list" class="space-y-2"></ul>
+            </div>
+        </div>
+    </template>
+
+    <!-- TEMPLATE BARU: KUIS -->
+    <template id="quiz-template">
+        <div class="card-bg p-6 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Kuis Teater Interaktif</h2>
+                <button id="add-quiz-btn" class="admin-only accent-bg text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-400 text-sm">
+                    <i class="fas fa-plus mr-2"></i>Buat Kuis Baru
+                </button>
+            </div>
+            <div id="quiz-list" class="space-y-4">
+                <!-- Daftar kuis akan dimuat di sini -->
+            </div>
+        </div>
+    </template>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // ===== STATE MANAGEMENT & DATABASE (SIMULASI) =====
+    let state = {
+        currentUser: null,
+        currentPage: 'login',
+        users: [],
+        activities: [],
+        attendance: [],
+        announcements: [],
+        scripts: [],
+        gallery: [],
+        forumMessages: [],
+        costumes: [], // BARU
+        props: [], // BARU
+        rehearsals: [], // BARU
+        quizzes: [], // BARU
+        quizSubmissions: [] // BARU
+    };
+
+    const loadDatabase = () => {
+        state = JSON.parse(localStorage.getItem('rajawalikuDB')) || {
+            currentUser: null, currentPage: 'login', users: [], activities: [],
+            attendance: [], announcements: [], scripts: [], gallery: [], forumMessages: [],
+            costumes: [], props: [], rehearsals: [], quizzes: [], quizSubmissions: []
+        };
+        // Inisialisasi admin jika belum ada
+        if (state.users.length === 0) {
+            state.users.push({ id: 1, name: 'Admin Utama', username: 'admin', password: 'admin', role: 'admin' });
+            state.users.push({ id: 2, name: 'Anggota Biasa', username: 'user', password: 'user', role: 'user' });
+            saveDatabase();
+        }
+    };
+    const saveDatabase = () => {
+        localStorage.setItem('rajawalikuDB', JSON.stringify(state));
+    };
+
+    // ===== UI ELEMENTS =====
+    const authView = document.getElementById('auth-view');
+    const mainView = document.getElementById('main-view');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const showRegisterLink = document.getElementById('show-register-link');
+    const showLoginLink = document.getElementById('show-login-link');
+    const contentArea = document.getElementById('content-area');
+    const pageTitle = document.getElementById('page-title');
+    const userGreeting = document.getElementById('user-greeting');
+    const desktopNav = document.getElementById('desktop-nav');
+    const mobileNav = document.getElementById('mobile-nav');
+    const menuToggle = document.getElementById('menu-toggle');
+    const closeMenu = document.getElementById('close-menu');
+    const mobileSidebar = document.getElementById('mobile-sidebar');
+    const modalContainer = document.getElementById('modal-container');
+
+    // ===== TEMPLATES =====
+    const templates = {
+        dashboard: document.getElementById('dashboard-template'),
+        members: document.getElementById('members-template'),
+        activities: document.getElementById('activities-template'),
+        attendance: document.getElementById('attendance-template'),
+        announcements: document.getElementById('announcements-template'),
+        scripts: document.getElementById('scripts-template'),
+        gallery: document.getElementById('gallery-template'),
+        forum: document.getElementById('forum-template'),
+        backstage: document.getElementById('backstage-template'), // BARU
+        quiz: document.getElementById('quiz-template'), // BARU
+    };
+
+    // ===== NAVIGASI & ROUTING =====
+    const navItems = [
+        { id: 'dashboard', icon: 'fa-tachometer-alt', text: 'Dashboard', roles: ['admin', 'user'] },
+        { id: 'members', icon: 'fa-users', text: 'Data Anggota', roles: ['admin'] },
+        { id: 'backstage', icon: 'fa-cogs', text: 'Backstage', roles: ['admin', 'user'] }, // Diperbarui untuk user
+        { id: 'activities', icon: 'fa-calendar-alt', text: 'Kegiatan', roles: ['admin', 'user'] },
+        { id: 'attendance', icon: 'fa-user-check', text: 'Absen Anggota', roles: ['admin', 'user'] },
+        { id: 'announcements', icon: 'fa-bullhorn', text: 'Pengumuman', roles: ['admin', 'user'] },
+        { id: 'scripts', icon: 'fa-file-alt', text: 'Jendela Naskah', roles: ['admin', 'user'] },
+        { id: 'gallery', icon: 'fa-images', text: 'Galeri', roles: ['admin', 'user'] },
+        { id: 'quiz', icon: 'fa-brain', text: 'Kuis Teater', roles: ['admin', 'user'] }, // BARU
+        { id: 'forum', icon: 'fa-comments', text: 'Forum Diskusi', roles: ['admin', 'user'] },
+    ];
+    
+    const renderNav = () => {
+        const createNavItem = (item) => {
+            if (state.currentUser && item.roles.includes(state.currentUser.role)) {
+                return `
+                    <a href="#" data-page="${item.id}" class="sidebar-item flex items-center p-3 rounded-md mb-2">
+                        <i class="fas ${item.icon} w-6"></i>
+                        <span class="ml-3">${item.text}</span>
+                    </a>
+                `;
             }
+            return '';
+        };
+
+        const navHtml = navItems.map(createNavItem).join('');
+        desktopNav.innerHTML = navHtml;
+        mobileNav.innerHTML = navHtml;
+    };
+    
+    const navigate = (pageId) => {
+        state.currentPage = pageId;
+        const pageTitleText = navItems.find(item => item.id === pageId)?.text || 'Dashboard';
+        pageTitle.textContent = pageTitleText;
+        contentArea.innerHTML = '';
+
+        if (templates[pageId] && templates[pageId].content) {
+            contentArea.appendChild(templates[pageId].content.cloneNode(true));
+            // Panggil fungsi render spesifik untuk halaman tersebut
+            const renderFunction = window[`render${pageId.charAt(0).toUpperCase() + pageId.slice(1)}Page`];
+            if (typeof renderFunction === 'function') {
+                renderFunction();
+            }
+        }
+        
+        // Update active class di sidebar
+        document.querySelectorAll('.sidebar-item').forEach(el => {
+            el.classList.toggle('active', el.dataset.page === pageId);
         });
-    </script>
+
+        // Sembunyikan sidebar mobile setelah navigasi
+        mobileSidebar.classList.add('hidden');
+    };
+
+    // ===== FUNGSI RENDER HALAMAN (YANG ADA & BARU) =====
+    window.renderDashboardPage = () => {
+        const upcomingActivityEl = document.getElementById('upcoming-activity');
+        const latestAnnouncementEl = document.getElementById('latest-announcement');
+        const totalMembersEl = document.getElementById('total-members');
+        const now = new Date();
+        const upcoming = state.activities.filter(a => new Date(a.date) >= now).sort((a,b) => new Date(a.date) - new Date(b.date))[0];
+        if (upcoming) upcomingActivityEl.innerHTML = `<p class="font-semibold">${upcoming.title}</p><p class="text-sm text-gray-500">${new Date(upcoming.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>`;
+        else upcomingActivityEl.textContent = 'Tidak ada kegiatan terdekat.';
+        const latest = state.announcements[state.announcements.length - 1];
+        if (latest) latestAnnouncementEl.innerHTML = `<p class="font-semibold">${latest.title}</p><p class="text-sm text-gray-500 truncate">${latest.content}</p>`;
+        else latestAnnouncementEl.textContent = 'Tidak ada pengumuman.';
+        totalMembersEl.textContent = state.users.filter(u => u.role === 'user').length;
+    };
+    
+    window.renderMembersPage = () => {
+        const listEl = document.getElementById('members-list');
+        listEl.innerHTML = state.users.map(user => `
+            <tr class="border-b">
+                <td class="p-3">${user.name}</td>
+                <td class="p-3">${user.username}</td>
+                <td class="p-3"><span class="px-2 py-1 rounded-full text-xs ${user.role === 'admin' ? 'bg-amber-600 text-white' : 'bg-green-500 text-white'}">${user.role}</span></td>
+                <td class="p-3">
+                    <button data-userid="${user.id}" class="delete-user-btn text-red-500 hover:text-red-400 ${user.role === 'admin' ? 'opacity-50 cursor-not-allowed' : ''}" ${user.role === 'admin' ? 'disabled' : ''}><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`).join('');
+    };
+
+    window.renderActivitiesPage = () => {
+        const listEl = document.getElementById('activities-list');
+        listEl.innerHTML = state.activities.map(act => `
+            <div class="card-bg p-4 rounded-lg">
+                <p class="font-bold">${act.title}</p>
+                <p class="text-sm text-gray-500"><i class="fas fa-calendar-alt mr-2"></i>${new Date(act.date).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                <p class="text-sm text-gray-500"><i class="fas fa-clock mr-2"></i>${act.time}</p>
+                <p class="text-sm mt-2">${act.description}</p>
+                <div class="admin-only mt-2 text-right">
+                    <button data-id="${act.id}" class="delete-activity-btn text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`).join('') || '<p>Belum ada kegiatan yang dijadwalkan.</p>';
+        toggleAdminElements();
+    };
+
+    window.renderAttendancePage = () => {
+        const listEl = document.getElementById('attendance-list');
+        if (state.currentUser.role === 'admin') {
+            listEl.innerHTML = state.activities.map(act => {
+                const attendees = state.attendance.filter(a => a.activityId === act.id);
+                return `
+                    <div class="card-bg p-4 rounded-lg mb-4">
+                        <h3 class="font-bold text-lg">${act.title} - ${new Date(act.date).toLocaleDateString('id-ID')}</h3>
+                        <p class="text-sm mb-2">${attendees.length} dari ${state.users.filter(u=>u.role==='user').length} anggota hadir.</p>
+                        <ul class="list-disc list-inside text-gray-600">${attendees.map(a => `<li>${state.users.find(u => u.id === a.userId)?.name || 'Unknown'}</li>`).join('')}</ul>
+                    </div>`;
+            }).join('') || '<p>Belum ada kegiatan untuk diabsen.</p>';
+        } else {
+            const now = new Date().setHours(0,0,0,0);
+            listEl.innerHTML = state.activities.filter(act => new Date(act.date).setHours(0,0,0,0) <= now).map(act => {
+                const hasAttended = state.attendance.some(a => a.activityId === act.id && a.userId === state.currentUser.id);
+                return `
+                    <div class="card-bg p-4 rounded-lg mb-4 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold">${act.title}</p>
+                            <p class="text-sm text-gray-500">${new Date(act.date).toLocaleDateString('id-ID')}</p>
+                        </div>
+                        <button data-id="${act.id}" class="attend-btn ${hasAttended ? 'bg-green-500 text-white cursor-not-allowed' : 'accent-bg hover:bg-yellow-400 text-white'} font-bold py-2 px-4 rounded-md text-sm" ${hasAttended ? 'disabled' : ''}>
+                            ${hasAttended ? '<i class="fas fa-check"></i> Hadir' : 'Absen Hadir'}
+                        </button>
+                    </div>`;
+            }).join('') || '<p>Belum ada kegiatan yang bisa diabsen.</p>';
+        }
+    };
+    
+    window.renderAnnouncementsPage = () => {
+        const listEl = document.getElementById('announcements-list');
+        listEl.innerHTML = [...state.announcements].reverse().map(ann => `
+            <div class="card-bg p-4 rounded-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-bold text-lg">${ann.title}</h3>
+                        <p class="text-sm text-gray-500 mb-2">Diposting pada ${new Date(ann.timestamp).toLocaleString('id-ID')}</p>
+                    </div>
+                    <button data-id="${ann.id}" class="delete-announcement-btn admin-only text-red-500 hover:text-red-400 text-sm"><i class="fas fa-trash"></i></button>
+                </div>
+                <p>${ann.content}</p>
+            </div>`).join('') || '<p>Belum ada pengumuman.</p>';
+        toggleAdminElements();
+    };
+
+    window.renderScriptsPage = () => {
+        const listEl = document.getElementById('scripts-list');
+        listEl.innerHTML = state.scripts.map(script => `
+            <div data-id="${script.id}" class="open-script-btn card-bg p-4 rounded-lg text-center cursor-pointer hover:bg-gray-50 transition">
+                <i class="fas fa-file-alt text-4xl accent-text mb-2"></i>
+                <p class="font-bold truncate">${script.title}</p>
+            </div>`).join('') || '<p>Belum ada naskah yang ditambahkan.</p>';
+    };
+    
+    window.renderGalleryPage = () => {
+        const listEl = document.getElementById('gallery-list');
+        listEl.innerHTML = state.gallery.map(img => `
+            <div class="relative group">
+                <img src="${img.imageUrl}" alt="${img.caption}" class="w-full h-48 object-cover rounded-lg">
+                <div class="absolute inset-0 bg-black bg-opacity-50 flex items-end p-2 opacity-0 group-hover:opacity-100 transition">
+                    <p class="text-white text-sm">${img.caption}</p>
+                </div>
+                 <button data-id="${img.id}" class="delete-gallery-btn admin-only absolute top-2 right-2 text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"><i class="fas fa-times text-xs"></i></button>
+            </div>`).join('') || '<p>Belum ada foto di galeri.</p>';
+        toggleAdminElements();
+    };
+    
+    window.renderForumPage = () => {
+        const messagesEl = document.getElementById('forum-messages');
+        messagesEl.innerHTML = state.forumMessages.map(msg => {
+            const user = state.users.find(u => u.id === msg.userId);
+            const isCurrentUser = msg.userId === state.currentUser.id;
+            return `
+                <div class="flex ${isCurrentUser ? 'justify-end' : 'justify-start'}">
+                    <div class="max-w-xs md:max-w-md">
+                        <p class="text-xs ${isCurrentUser ? 'text-right' : 'text-left'} text-gray-500 mb-1">${user ? user.name : 'Unknown'} <span class="text-gray-400">${new Date(msg.timestamp).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</span></p>
+                        <div class="px-4 py-2 rounded-lg ${isCurrentUser ? 'accent-bg text-white' : 'bg-gray-200'}">
+                            ${msg.message}
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    };
+    
+    window.renderBackstagePage = () => {
+        const isAdmin = state.currentUser.role === 'admin';
+        const renderList = (type, listEl) => {
+            listEl.innerHTML = state[type].map(item => `
+                <li class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                    <span>${item.name} <span class="text-xs text-gray-500">(${item.status || 'Tersedia'})</span></span>
+                    ${isAdmin ? `<button data-id="${item.id}" data-type="${type}" class="delete-backstage-item-btn text-red-500 hover:text-red-700 text-sm"><i class="fas fa-times"></i></button>` : ''}
+                </li>
+            `).join('') || '<li class="text-sm text-gray-500">Belum ada data.</li>';
+        };
+        renderList('costumes', document.getElementById('costumes-list'));
+        renderList('props', document.getElementById('props-list'));
+        renderList('rehearsals', document.getElementById('rehearsals-list'));
+        toggleAdminElements(); // Terapkan visibilitas elemen admin
+    };
+    
+    window.renderQuizPage = () => {
+        const listEl = document.getElementById('quiz-list');
+        listEl.innerHTML = state.quizzes.map(quiz => {
+            const submission = state.quizSubmissions.find(s => s.quizId === quiz.id && s.userId === state.currentUser.id);
+            return `
+                <div class="border border-gray-200 p-4 rounded-lg flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold">${quiz.title}</h3>
+                        <p class="text-sm text-gray-500">${quiz.questions.length} Pertanyaan</p>
+                    </div>
+                    <div>
+                        ${submission ?
+                            `<span class="font-bold text-lg accent-text">Skor: ${submission.score}%</span>` :
+                            `<button data-id="${quiz.id}" class="take-quiz-btn accent-bg text-white font-bold py-2 px-4 rounded-md text-sm">Kerjakan</button>`
+                        }
+                        <button data-id="${quiz.id}" class="delete-quiz-btn admin-only text-red-500 hover:text-red-700 ml-4"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+        }).join('') || '<p class="text-gray-500">Belum ada kuis yang dibuat.</p>';
+        toggleAdminElements();
+    };
+
+    const openModal = (title, content, onSave) => {
+        modalContainer.innerHTML = `
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-lg text-gray-800">
+                <div class="p-4 border-b flex justify-between items-center">
+                    <h3 class="text-lg font-bold">${title}</h3>
+                    <button id="close-modal-btn" class="text-gray-400 hover:text-gray-800 text-2xl">&times;</button>
+                </div>
+                <div class="p-4">${content}</div>
+                <div class="p-4 border-t text-right">
+                    <button id="cancel-modal-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-md mr-2">Batal</button>
+                    <button id="save-modal-btn" class="accent-bg hover:bg-yellow-400 text-white font-bold py-2 px-4 rounded-md">Simpan</button>
+                </div>
+            </div>`;
+        modalContainer.classList.remove('hidden');
+        document.getElementById('close-modal-btn').onclick = closeModal;
+        document.getElementById('cancel-modal-btn').onclick = closeModal;
+        document.getElementById('save-modal-btn').onclick = onSave;
+    };
+    const closeModal = () => {
+        modalContainer.classList.add('hidden');
+        modalContainer.innerHTML = '';
+    };
+
+    const login = (username, password) => {
+        const user = state.users.find(u => u.username === username && u.password === password);
+        if (user) {
+            state.currentUser = user;
+            authView.classList.add('hidden');
+            mainView.classList.remove('hidden');
+            userGreeting.textContent = `Halo, ${user.name}`;
+            renderNav();
+            navigate('dashboard');
+            saveDatabase();
+        } else {
+            alert('Username atau password salah!');
+        }
+    };
+    
+    const register = (name, username, password) => {
+        if (state.users.some(u => u.username === username)) {
+            alert('Username sudah digunakan!');
+            return;
+        }
+        const newUser = { id: Date.now(), name, username, password, role: 'user' };
+        state.users.push(newUser);
+        saveDatabase();
+        alert('Pendaftaran berhasil! Silakan login.');
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+    };
+
+    const logout = () => {
+        state.currentUser = null;
+        authView.classList.remove('hidden');
+        mainView.classList.add('hidden');
+        saveDatabase();
+    };
+    
+    const toggleAdminElements = () => {
+        document.querySelectorAll('.admin-only').forEach(el => {
+            el.style.display = (state.currentUser && state.currentUser.role === 'admin') ? '' : 'none';
+        });
+    };
+
+    // ===== EVENT LISTENERS (YANG ADA & BARU) =====
+    showRegisterLink.addEventListener('click', (e) => { e.preventDefault(); loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); });
+    showLoginLink.addEventListener('click', (e) => { e.preventDefault(); loginForm.classList.remove('hidden'); registerForm.classList.add('hidden'); });
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        login(document.getElementById('login-username').value, document.getElementById('login-password').value);
+    });
+    document.getElementById('registerForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        register(document.getElementById('register-name').value, document.getElementById('register-username').value, document.getElementById('register-password').value);
+    });
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    menuToggle.addEventListener('click', () => mobileSidebar.classList.remove('hidden'));
+    closeMenu.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+    mobileSidebar.addEventListener('click', (e) => { if (e.target === mobileSidebar) mobileSidebar.classList.add('hidden'); });
+    document.body.addEventListener('click', (e) => {
+        const sidebarLink = e.target.closest('.sidebar-item');
+        if (sidebarLink) {
+            e.preventDefault();
+            navigate(sidebarLink.dataset.page);
+        }
+    });
+
+    contentArea.addEventListener('click', e => {
+        if (e.target.closest('.delete-user-btn')) {
+            const userId = parseInt(e.target.closest('.delete-user-btn').dataset.userid);
+            if (confirm('Anda yakin ingin menghapus anggota ini?')) { state.users = state.users.filter(u => u.id !== userId); saveDatabase(); renderMembersPage(); }
+        }
+        
+        if (e.target.id === 'add-activity-btn') {
+            const content = `<div class="space-y-4"><div><label class="block mb-1">Judul Kegiatan</label><input type="text" id="modal-activity-title" class="w-full px-3 py-2 bg-gray-100 text-gray-800 border rounded"></div><div><label class="block mb-1">Tanggal</label><input type="date" id="modal-activity-date" class="w-full px-3 py-2 bg-gray-100 text-gray-800 border rounded"></div><div><label class="block mb-1">Waktu</label><input type="time" id="modal-activity-time" class="w-full px-3 py-2 bg-gray-100 text-gray-800 border rounded"></div><div><label class="block mb-1">Deskripsi</label><textarea id="modal-activity-desc" class="w-full px-3 py-2 bg-gray-100 text-gray-800 border rounded" rows="3"></textarea></div></div>`;
+            openModal('Tambah Kegiatan Baru', content, () => { 
+                const newActivity = { id: Date.now(), title: document.getElementById('modal-activity-title').value, date: document.getElementById('modal-activity-date').value, time: document.getElementById('modal-activity-time').value, description: document.getElementById('modal-activity-desc').value };
+                if (newActivity.title && newActivity.date && newActivity.time) { state.activities.push(newActivity); saveDatabase(); renderActivitiesPage(); closeModal(); } else { alert('Harap isi semua kolom yang wajib diisi.'); }
+            });
+        }
+        
+        if (e.target.closest('.delete-activity-btn')) {
+            const actId = parseInt(e.target.closest('.delete-activity-btn').dataset.id);
+            if (confirm('Anda yakin ingin menghapus kegiatan ini?')) { state.activities = state.activities.filter(a => a.id !== actId); saveDatabase(); renderActivitiesPage(); }
+        }
+        
+        if(e.target.closest('.attend-btn')) {
+            const btn = e.target.closest('.attend-btn');
+            const actId = parseInt(btn.dataset.id);
+            if (!state.attendance.some(a => a.activityId === actId && a.userId === state.currentUser.id)) {
+                state.attendance.push({ id: Date.now(), activityId: actId, userId: state.currentUser.id, timestamp: new Date() });
+                saveDatabase(); renderAttendancePage();
+            }
+        }
+
+        if (e.target.id === 'add-announcement-btn') {
+            // ... logic
+        }
+        
+        if (e.target.closest('.delete-announcement-btn')) {
+            // ... logic
+        }
+        
+        if (e.target.id === 'add-script-btn') {
+            // ... logic
+        }
+        
+        if (e.target.closest('.open-script-btn')) {
+            // ... logic
+        }
+        
+        if (e.target.id === 'add-gallery-btn') {
+            // ... logic
+        }
+        
+        if (e.target.closest('.delete-gallery-btn')) {
+            // ... logic
+        }
+
+        const addBackstageItem = (type, title) => {
+             const content = `<div class="space-y-4"><div><label class="block mb-1">Nama Item</label><input type="text" id="modal-item-name" class="w-full px-3 py-2 bg-gray-100 text-gray-800 border rounded"></div><div><label class="block mb-1">Status/Keterangan</label><input type="text" id="modal-item-status" class="w-full px-3 py-2 bg-gray-100 text-gray-800 border rounded"></div></div>`;
+            openModal(`Tambah ${title}`, content, () => {
+                const newItem = { id: Date.now(), name: document.getElementById('modal-item-name').value, status: document.getElementById('modal-item-status').value };
+                if (newItem.name) { state[type].push(newItem); saveDatabase(); renderBackstagePage(); closeModal(); } else { alert('Nama item tidak boleh kosong.'); }
+            });
+        };
+
+        if (e.target.id === 'add-costume-btn') addBackstageItem('costumes', 'Kostum');
+        if (e.target.id === 'add-prop-btn') addBackstageItem('props', 'Properti');
+        if (e.target.id === 'add-rehearsal-btn') addBackstageItem('rehearsals', 'Jadwal Gladi');
+
+        if (e.target.closest('.delete-backstage-item-btn')) {
+            const btn = e.target.closest('.delete-backstage-item-btn');
+            const id = parseInt(btn.dataset.id);
+            const type = btn.dataset.type;
+            state[type] = state[type].filter(item => item.id !== id);
+            saveDatabase();
+            renderBackstagePage();
+        }
+
+        if (e.target.id === 'add-quiz-btn') {
+            let questionCount = 1;
+            const getQuestionHTML = (index) => `<div class="question-block border-t pt-4 mt-4"><p class="font-semibold mb-2">Pertanyaan ${index}</p><input type="text" placeholder="Tulis pertanyaan..." class="modal-quiz-q w-full border p-2 rounded mb-2"><div class="grid grid-cols-2 gap-2">${[1,2,3,4].map(i => `<div class="flex items-center"><input type="radio" name="answer_${index}" value="${i-1}" class="modal-quiz-a-radio mr-2"><input type="text" placeholder="Opsi ${i}" class="modal-quiz-a w-full border p-2 rounded text-sm"></div>`).join('')}</div></div>`;
+            let content = `<div><label class="block mb-1">Judul Kuis</label><input type="text" id="modal-quiz-title" class="w-full px-3 py-2 bg-gray-100 text-gray-800 border rounded"></div><div id="questions-container">${getQuestionHTML(1)}</div><button id="add-question-btn" type="button" class="mt-4 text-sm accent-bg text-white py-1 px-3 rounded">+ Tambah Pertanyaan</button>`;
+            openModal('Buat Kuis Baru', content, () => {
+                const newQuiz = { id: Date.now(), title: document.getElementById('modal-quiz-title').value, questions: [] };
+                document.querySelectorAll('.question-block').forEach((qBlock, index) => {
+                    const questionText = qBlock.querySelector('.modal-quiz-q').value;
+                    const options = Array.from(qBlock.querySelectorAll('.modal-quiz-a')).map(opt => opt.value);
+                    const correctIndex = qBlock.querySelector('.modal-quiz-a-radio:checked')?.value;
+                    if (questionText && options.every(o => o) && correctIndex) newQuiz.questions.push({ q: questionText, options: options, answer: parseInt(correctIndex) });
+                });
+                if (newQuiz.title && newQuiz.questions.length > 0) { state.quizzes.push(newQuiz); saveDatabase(); renderQuizPage(); closeModal(); } else { alert('Harap isi judul, minimal satu pertanyaan, semua opsi, dan pilih jawaban yang benar.'); }
+            });
+            document.getElementById('add-question-btn').onclick = () => { questionCount++; document.getElementById('questions-container').insertAdjacentHTML('beforeend', getQuestionHTML(questionCount)); };
+        }
+        
+        if (e.target.closest('.delete-quiz-btn')) {
+            const quizId = parseInt(e.target.closest('.delete-quiz-btn').dataset.id);
+            if(confirm('Yakin hapus kuis ini?')) { state.quizzes = state.quizzes.filter(q => q.id !== quizId); saveDatabase(); renderQuizPage(); }
+        }
+        
+        if (e.target.closest('.take-quiz-btn')) {
+            const quizId = parseInt(e.target.closest('.take-quiz-btn').dataset.id);
+            const quiz = state.quizzes.find(q => q.id === quizId);
+            const content = `<form id="quiz-form">${quiz.questions.map((q, index) => `<div class="mb-4"><p class="font-semibold">${index + 1}. ${q.q}</p><div class="mt-2 space-y-1">${q.options.map((opt, optIndex) => `<div><label><input type="radio" name="q_${index}" value="${optIndex}" required class="mr-2">${opt}</label></div>`).join('')}</div></div>`).join('')}</form>`;
+            openModal(`Kuis: ${quiz.title}`, content, () => {
+                let score = 0;
+                const form = document.getElementById('quiz-form');
+                quiz.questions.forEach((q, index) => {
+                    const selected = form.querySelector(`input[name="q_${index}"]:checked`);
+                    if (selected && parseInt(selected.value) === q.answer) score++;
+                });
+                const finalScore = Math.round((score / quiz.questions.length) * 100);
+                state.quizSubmissions.push({ id: Date.now(), quizId: quiz.id, userId: state.currentUser.id, score: finalScore });
+                saveDatabase();
+                alert(`Kuis selesai! Skor Anda: ${finalScore}%`);
+                renderQuizPage();
+                closeModal();
+            });
+        }
+    });
+    
+    document.body.addEventListener('submit', e => {
+        if (e.target.id === 'forum-form') {
+            e.preventDefault();
+            const input = document.getElementById('forum-input');
+            const message = input.value.trim();
+            if (message) {
+                state.forumMessages.push({ id: Date.now(), userId: state.currentUser.id, message: message, timestamp: new Date() });
+                saveDatabase();
+                renderForumPage();
+                input.value = '';
+            }
+        }
+    });
+
+    // ===== INISIALISASI APLIKASI =====
+    const init = () => {
+        loadDatabase();
+        const loggedInUser = state.currentUser;
+        if (loggedInUser) {
+            login(loggedInUser.username, loggedInUser.password);
+        } else {
+            authView.classList.remove('hidden');
+            mainView.classList.add('hidden');
+        }
+    };
+    
+    init();
+
+});
+</script>
+
 </body>
 </html>
-
